@@ -31,9 +31,17 @@ public class MovieRepository {
 		try (Session session = driver.session()) {
 
 			session.run(
-					"CREATE (m:Movie {id: $id, title: $title, releaseYear: $releaseYear, description: $description})",
-					org.neo4j.driver.Values.parameters("id", movie.getId(), "title", movie.getTitle(), "releaseYear",
-							movie.getReleaseYear(), "description", movie.getDescription()));
+				    "MERGE (m:Movie {id: $id}) " +
+				    "SET m.title = $title, " +
+				    "m.releaseYear = $releaseYear, " +
+				    "m.description = $description",
+				    org.neo4j.driver.Values.parameters(
+				        "id", movie.getId(),
+				        "title", movie.getTitle(),
+				        "releaseYear", movie.getReleaseYear(),
+				        "description", movie.getDescription()
+				    )
+				);
 
 			return "Movie created successfully";
 
@@ -71,11 +79,10 @@ public class MovieRepository {
 
 	    try (Session session = driver.session()) {
 
-	        session.run(
-	                "MATCH (m:Movie {id: $id}) DELETE m",
-	                org.neo4j.driver.Values.parameters("id", id)
-	        );
-
+	    	session.run(
+	    		    "MATCH (m:Movie {id: $id}) DETACH DELETE m",
+	    		    org.neo4j.driver.Values.parameters("id", id)
+	    		);
 	        return "Movie deleted successfully";
 
 	    } catch (Exception e) {
