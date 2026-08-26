@@ -88,7 +88,7 @@ public class ActorRepository {
         try (Session session = driver.session()) {
 
             session.run(
-                    "MATCH (a:Actor {id: $id}) DELETE a",
+                    "MATCH (a:Actor {id: $id}) DETACH DELETE a",
                     org.neo4j.driver.Values.parameters("id", id)
             );
 
